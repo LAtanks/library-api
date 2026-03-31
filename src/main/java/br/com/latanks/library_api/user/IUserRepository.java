@@ -1,0 +1,8 @@
+package br.com.latanks.library_api.user;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface IUserRepository extends JpaRepository<User, Long> {
+
+
+}
