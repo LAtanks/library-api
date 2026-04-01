@@ -20,8 +20,26 @@ public class UserController {
     private IUserRepository userRepository;
 
     @PostMapping("/")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity createUser(@RequestBody User user) {
+        User existingUser = this.userRepository.findByEmail(user.getEmail());
+        
+        if(existingUser != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+        }
+
+        if(user.getPassword().length() < 8) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must be at least 8 characters long");
+        }
+
+
+
+        if(hasAnyNumber(user.getName())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User name cannot contain numbers");
+        }
+
         User savedUser = this.userRepository.save(user);
+        
+        System.out.println("User created: " + savedUser.getName() + " with email: " + savedUser.getEmail() + " Id: " + savedUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
@@ -32,12 +50,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
-    @DeleteMapping("/{id}")
-
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return this.userRepository.findById(id)
                 .map(user -> ResponseEntity.ok(user))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    private static boolean hasAnyNumber(String str){
+        for (char c : str.toCharArray()) {
+            if (Character.isDigit(c)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
