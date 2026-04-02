@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.latanks.library_api.exception.impl.InvalidCredentialsExceptions;
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -20,21 +23,15 @@ public class UserController {
     private IUserRepository userRepository;
 
     @PostMapping("/")
-    public ResponseEntity createUser(@RequestBody User user) {
+    public ResponseEntity createUser(@RequestBody @Valid User user) {
         User existingUser = this.userRepository.findByEmail(user.getEmail());
-        
+
         if(existingUser != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+            throw new InvalidCredentialsExceptions("Email already exists");
         }
-
-        if(user.getPassword().length() < 8) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must be at least 8 characters long");
-        }
-
-
 
         if(hasAnyNumber(user.getName())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User name cannot contain numbers");
+            throw new InvalidCredentialsExceptions("Name cannot contains any number");
         }
 
         User savedUser = this.userRepository.save(user);
@@ -45,9 +42,21 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user){
+        User existingUser = this.userRepository.findById(id).orElseThrow(() -> new InvalidCredentialsExceptions("User not found"));
+
         User updatedUser = this.userRepository.save(user);
+        updatedUser.setId(existingUser.getId());
         
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteUser(@PathVariable Long id) {
+        User existingUser = this.userRepository.findById(id).orElseThrow(() -> new InvalidCredentialsExceptions("User not found"));
+
+        this.userRepository.delete(existingUser);
+        
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/{id}")
