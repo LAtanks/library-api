@@ -2,6 +2,7 @@ package br.com.latanks.library_api.user;
 
 import java.util.Set;
 
+import br.com.latanks.library_api.book.Book;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,5 +37,9 @@ public class User {
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @NotBlank(message = "Password cannot be blank")
     private String password;
+
+    @
+    @Column(name = "borrowed_books")
+    private Set<Book> borrowedBooks;
 
 }

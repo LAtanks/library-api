@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.latanks.library_api.Utils.Utils;
 import jakarta.validation.Valid;
 
 @RestController
@@ -23,6 +24,10 @@ public class BookController {
     @PostMapping("/")
     public ResponseEntity createBook(@RequestBody @Valid Book book){
         Book savedBook = this.bookRepository.save(book);
+        if(Utils.hasAnyNumber(book.getAuthor())) {
+            return ResponseEntity.badRequest().body("Author cannot contains any number");
+        }
+
         return ResponseEntity.status(201).body(savedBook);
     }
 

@@ -20,8 +20,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     
     @ExceptionHandler(InvalidCredentialsExceptions.class)
     private ResponseEntity<Object> invalidCredentials(InvalidCredentialsExceptions ex) {
-        
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), List.of(ex.getStackTrace().toString()));
+        List<String> errors = ex.getMessage() != null ? List.of(ex.getMessage()) : List.of();
+
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errors.isEmpty() ? "Invalid credentials" : errors.get(0), errors);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }

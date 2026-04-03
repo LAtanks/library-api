@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.latanks.library_api.Utils.Utils;
 import br.com.latanks.library_api.exception.impl.InvalidCredentialsExceptions;
 import jakarta.validation.Valid;
 
@@ -30,13 +31,11 @@ public class UserController {
             throw new InvalidCredentialsExceptions("Email already exists");
         }
 
-        if(hasAnyNumber(user.getName())) {
+        if(Utils.hasAnyNumber(user.getName())) {
             throw new InvalidCredentialsExceptions("Name cannot contains any number");
         }
 
         User savedUser = this.userRepository.save(user);
-        
-        System.out.println("User created: " + savedUser.getName() + " with email: " + savedUser.getEmail() + " Id: " + savedUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
@@ -64,14 +63,5 @@ public class UserController {
         return this.userRepository.findById(id)
                 .map(user -> ResponseEntity.ok(user))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
-    private static boolean hasAnyNumber(String str){
-        for (char c : str.toCharArray()) {
-            if (Character.isDigit(c)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

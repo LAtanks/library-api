@@ -1,6 +1,7 @@
 package br.com.latanks.library_api.book;
 
 import java.util.List;
+import java.util.Set;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
@@ -27,7 +28,7 @@ public class Book {
 
     @NotBlank(message = "Title cannot be blank")
     @Column(name = "title", nullable = false)
-    @Size(min = 1, max = 50, message = "Title must be between 1 and 50 characters")
+    @Size(max = 50, message = "Title must be between 1 and 50 characters")
     private String title;
 
     @Size(max = 50, message = "Author must be at most 50 characters")
@@ -41,5 +42,5 @@ public class Book {
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
-    private List<Category> category;
+    private Set<Category> category;
 }
