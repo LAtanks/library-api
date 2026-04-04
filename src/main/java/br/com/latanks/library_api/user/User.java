@@ -1,5 +1,6 @@
 package br.com.latanks.library_api.user;
 
+import java.util.List;
 import java.util.Set;
 
 import br.com.latanks.library_api.book.Book;
@@ -38,8 +39,6 @@ public class User {
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
-    @
-    @Column(name = "borrowed_books")
-    private Set<Book> borrowedBooks;
+    //private Set<Book> borrowedBooks;
 
 }
