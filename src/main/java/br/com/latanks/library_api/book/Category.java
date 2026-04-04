@@ -14,7 +14,16 @@ public enum Category {
     MYSTERY("Mystery"),
     BIOGRAPHY("Biography"),
     HISTORY("History"),
-    CHILDREN("Children");
+    CHILDREN("Children"),
+    ROMANCE("Romance"),
+    SUSPENSE("Suspense"),
+    Horror("Horror"),
+    YOUNG_ADULT("Young Adult"),
+    BIOGRAFY("Biografy"),
+    ACADEMIC("Academic"),
+    BUSINESS("Business"),
+    COMICS("Comics"),
+    MANGA("Manga");
 
     private final String displayName;
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -28,7 +29,7 @@ public class Book {
 
     @NotBlank(message = "Title cannot be blank")
     @Column(name = "title", nullable = false)
-    @Size(max = 50, message = "Title must be between 1 and 50 characters")
+    @Size(max = 250, message = "Title must be between 1 and 50 characters")
     private String title;
 
     @Size(max = 50, message = "Author must be at most 50 characters")
@@ -37,7 +38,8 @@ public class Book {
     private String author;
 
     @NotBlank(message = "Description cannot be blank")
-    @Column(name = "description", nullable = true)
+    @Lob
+    @Column(name = "description", nullable = true, columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "category", nullable = false)
