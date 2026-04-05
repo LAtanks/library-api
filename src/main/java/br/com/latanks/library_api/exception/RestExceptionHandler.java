@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import br.com.latanks.library_api.exception.impl.BookBorrowFailedException;
 import br.com.latanks.library_api.exception.impl.InvalidCredentialsExceptions;
 
 @RestControllerAdvice
@@ -20,6 +21,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     
     @ExceptionHandler(InvalidCredentialsExceptions.class)
     private ResponseEntity<Object> invalidCredentials(InvalidCredentialsExceptions ex) {
+        List<String> errors = ex.getMessage() != null ? List.of(ex.getMessage()) : List.of();
+
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errors.isEmpty() ? "Invalid credentials" : errors.get(0), errors);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(BookBorrowFailedException.class)
+    private ResponseEntity<Object> bookBorrowFailed(BookBorrowFailedException ex){
         List<String> errors = ex.getMessage() != null ? List.of(ex.getMessage()) : List.of();
 
 

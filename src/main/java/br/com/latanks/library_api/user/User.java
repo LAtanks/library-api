@@ -4,20 +4,24 @@ import java.util.List;
 import java.util.Set;
 
 import br.com.latanks.library_api.book.Book;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Table(name = "tb_users")
 @Entity(name = "tb_users")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id
@@ -39,6 +43,7 @@ public class User {
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
-    //private Set<Book> borrowedBooks;
+    @OneToMany(mappedBy = "lentUser", cascade = CascadeType.ALL)
+    private Set<Book> borrowedBooks;
 
 }

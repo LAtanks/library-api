@@ -3,6 +3,7 @@ package br.com.latanks.library_api.book;
 import java.util.List;
 import java.util.Set;
 
+import br.com.latanks.library_api.user.User;
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,15 +12,19 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Table(name = "tb_books")
 @Entity
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Book {
     
     @Id
@@ -45,4 +50,10 @@ public class Book {
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<Category> category;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User lentUser;
+
+    @Column
 }
