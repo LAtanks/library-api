@@ -1,5 +1,6 @@
 package br.com.latanks.library_api.book;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class BookController {
     public ResponseEntity createBook(@RequestBody @Valid Book book){
         Book savedBook = this.bookRepository.save(book);
 
-        return Utils.hasAnyNumber(book.getAuthor()) 
+        return !Utils.hasAnyNumber(book.getAuthor()) 
         ? ResponseEntity.status(201).body(savedBook)
         : ResponseEntity.badRequest().body("Author cannot contains any number");
     }
@@ -63,24 +64,40 @@ public class BookController {
     }
 
     @PostMapping("/borrowBook/{id}")
-    public ResponseEntity borrowBook(@PathVariable Long id, @RequestBody Long userId){
-        Book book = this.bookRepository.findById(id).orElseThrow(() -> new InvalidCredentialsExceptions("Livro não encontrado"));
-        User user = this.userRepository.findById(userId).orElseThrow(() -> new InvalidCredentialsExceptions("Usuario não encontrado"));
+    public ResponseEntity borrowBook(@PathVariable Long id, @RequestBody BorrowBookDTO dto){
+        Book book = this.bookRepository.findById(id)
+            .orElseThrow(() -> new InvalidCredentialsExceptions("Livro não encontrado"));
 
-        if(book.getLentUser() != null)
-            throw new BookBorrowFailedException("Este livro já está emprestado");
-        if(user.getBorrowedBooks().contains(book))
-            throw new BookBorrowFailedException("Este usuario ja pegou este livro emprestado");
-        if(user.getBorrowedBooks().size() > 3)
-            throw new BookBorrowFailedException("Atingiu o limite para emprestimos de livros");
+        User user = this.userRepository.findById(dto.userId())
+            .orElseThrow(() -> new InvalidCredentialsExceptions("Usuario não encontrado"));
+
+        if(dto.loanStart() == null || dto.loanEnd() == null) 
+            throw new BookBorrowFailedException("Precisa colocar a data de inicio e a de terminio do emprestimo");
+
+        if(dto.loanStart().isBefore(LocalDateTime.now())) 
+            throw new BookBorrowFailedException("A data de emprestimo tem que ser depois da data atual.");
+
+        if(dto.loanEnd().isBefore(dto.loanStart()) || dto.loanEnd().isEqual(dto.loanStart())) 
+            throw new BookBorrowFailedException("A data de terminio do emprestimo tem q ser depois da data de emprestimo");
+
         
-        user.getBorrowedBooks().add(book);
-        book.setLentUser(user);
+        if(book.getLentUser() != null)
+
+            throw new BookBorrowFailedException("Este livro já está emprestado");
+        
+        if(user.getBorrowedBooks().stream().anyMatch(b -> b.getId().equals(id)))
+            throw new BookBorrowFailedException("Este usuario ja pegou este livro emprestado");
+
+        if(user.getBorrowedBooks().size() >= 3)
+            throw new BookBorrowFailedException("Este usuario atingiu o limite de emprestimos");
+
+        user.addBooks(book);
+
+        book.setLoanStartDate(dto.loanStart());
+        book.setLoanEndDate(dto.loanEnd());
 
         this.bookRepository.save(book);
         this.userRepository.save(user);
-        
-        System.out.println(book);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Emprestado com sucesso");
     }

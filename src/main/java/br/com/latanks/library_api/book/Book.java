@@ -1,7 +1,10 @@
 package br.com.latanks.library_api.book;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.latanks.library_api.user.User;
 import jakarta.annotation.Generated;
@@ -20,16 +23,22 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Table(name = "tb_books")
 @Entity
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"lentUser"})
 public class Book {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotBlank(message = "Title cannot be blank")
@@ -53,7 +62,12 @@ public class Book {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User lentUser;
 
-    @Column
+    @Column(name = "loan_start_date", nullable = true)
+    private LocalDateTime loanStartDate;
+
+    @Column(name = "loan_end_date", nullable = true)
+    private LocalDateTime loanEndDate;
 }

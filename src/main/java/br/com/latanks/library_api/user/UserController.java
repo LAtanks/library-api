@@ -64,4 +64,5 @@ public class UserController {
                 .map(user -> ResponseEntity.ok(user))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
+
 }
