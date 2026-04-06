@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.latanks.library_api.Utils.Utils;
+import br.com.latanks.library_api.book.dto.BorrowBookDTO;
 import br.com.latanks.library_api.exception.impl.BookBorrowFailedException;
 import br.com.latanks.library_api.exception.impl.InvalidCredentialsExceptions;
 import br.com.latanks.library_api.user.IUserRepository;
@@ -79,7 +80,6 @@ public class BookController {
 
         if(dto.loanEnd().isBefore(dto.loanStart()) || dto.loanEnd().isEqual(dto.loanStart())) 
             throw new BookBorrowFailedException("A data de terminio do emprestimo tem q ser depois da data de emprestimo");
-
         
         if(book.getLentUser() != null)
 
